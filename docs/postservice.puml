@@ -1,0 +1,38 @@
+@startuml
+
+entity "Posts" {
+  * id : NUMBER
+  --
+  user_id : NUMBER
+  created_at : TIMESTAMP
+  text : VARCHAR
+  is_draft : BOOLEAN
+}
+
+entity "Comments" {
+  * id : NUMBER
+  --
+  user_id : NUMBER
+  created_at : TIMESTAMP
+  post_id : NUMBER
+  parent_id : NUMBER
+}
+
+entity "Notifications" {
+  * id : NUMBER
+  --
+  content : VARCHAR
+  post_id: NUMBER
+  comment_id: NUMBER
+  user_id : NUMBER
+  is_read : BOOLEAN
+  created_at : TIMESTAMP
+}
+
+
+
+Posts --{ Comments
+Posts --{ Notifications
+Comments o-- Notifications
+
+@enduml

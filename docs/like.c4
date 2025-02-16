@@ -1,0 +1,81 @@
+// You start with defining your terms and ...
+specification {
+  // ... "types" of your elements
+  element actor {
+    style {
+      shape person // how to render
+    }
+  }
+  element system
+  element component
+  // and "typed" relationships (if you need)
+  relationship async
+}
+
+// Here goes your model, the single source of truth
+model {
+  customer = actor 'User' {
+    description 'Fake ui'
+    -> apiService 'HTTP Requests'
+  }
+
+  project = system 'Social' {
+    apiService = component 'Api Service' {
+        description 'Handle Requests'
+    }
+
+    userService = component 'User Service' {
+        description 'Manage users'
+    }
+    userServiceDB = component 'User Service DB' {
+        description 'Stores users, roles, relations
+        PostgreSQL'
+        style {
+            shape storage
+        }
+    }
+    userService -> userServiceDB
+
+    postService = component 'Post Service' {
+        description 'Manage posts, comments and notifications'
+    }
+    postServiceDB = component 'Post Service DB' {
+        description 'Stores posts, comments and notifications
+        PostgreSQL'
+        style {
+            shape storage
+        }
+    }
+    postService -> postServiceDB
+
+    statisticService = component 'Statistic Service' {
+        description 'Calculate statistics such as reactions, views'
+    }
+    statisticServiceDB = component 'Statistic Service DB' {
+        description 'Stores statistic data such as reactions, views
+        ClickHouse'
+        style {
+            shape storage
+        }
+    }
+    statisticService -> statisticServiceDB
+
+    apiService -> userService
+    apiService -> postService
+    apiService -> statisticService
+
+
+  }
+}
+
+// And finally, you define what to render
+views {
+  view index {
+    title 'Landscape view'
+    include *, project.*
+
+    style project.* {
+      color green
+    }
+  }
+}
