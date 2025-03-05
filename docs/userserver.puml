@@ -1,12 +1,17 @@
 @startuml
 
 entity "User" {
-  * id : NUMBER
+  * id: UUIDv7
   --
-  name : VARCHAR
-  surname : VARCHAR
-  login : VARCHAR
-  password : VARCHAR
+  name: VARCHAR
+  surname: VARCHAR
+  dob: DATE
+  email: VARCHAR
+  phone: VARCHAR
+  login: VARCHAR
+  password: VARCHAR
+  created_at: TIMESTAMP
+  edited_at: TIMESTAMP
 }
 
 entity "Role" {

@@ -1,0 +1,3 @@
+module apiservice
+
+go 1.24.0
