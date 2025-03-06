@@ -1,6 +1,6 @@
 package api
 
-import "userservice/internal/storage"
+import "social/userservice/internal/storage"
 
 type Api struct {
 	storage storage.CommonRepository

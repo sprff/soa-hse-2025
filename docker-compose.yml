@@ -1,10 +1,10 @@
 services:
 
-  #apigateway
-  apigateway-backend:
+  #apiservice
+  apiservice-backend:
     build:
-      context: apigateway/.
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apiservice/Dockerfile
     ports:
       - "7000:8080"
       - "80:8080"
@@ -13,8 +13,8 @@ services:
   userservice-backend:
     hostname: userservice-backend
     build:
-      context: userservice/.
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: userservice/Dockerfile
 
     ports:
       - "7001:8080"
@@ -30,3 +30,10 @@ services:
       - "6001:5432"
     volumes:
       - ./userservice/db:/var/lib/postgresql/data
+
+
+  curl:
+    image: curlimages/curl
+    tty: true               # equivalent for -t
+    stdin_open: true        # equivalent for -i
+    entrypoint: sh

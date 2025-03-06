@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log/slog"
-	"userservice/internal/models"
-	"userservice/internal/utils"
+	"social/shared/models"
+	"social/userservice/internal/utils"
 )
 
 func (p *PsqlStorage) userWithLoginExists(ctx context.Context, user models.User) (bool, error) {
@@ -53,7 +53,7 @@ func (p *PsqlStorage) UpdateUser(ctx context.Context, user models.User) error {
 
 	res, err := p.db.NamedExec(`
 	UPDATE users
-	SET login=:login, password=:password, email=:email,
+	SET email=:email,
 	name=:name, surname=:surname, phone=:phone, dob=:dob, updated_at=CURRENT_TIMESTAMP
 	WHERE id=:id`, &user)
 	if err != nil {

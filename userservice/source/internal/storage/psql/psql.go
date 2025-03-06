@@ -2,7 +2,7 @@ package psql
 
 import (
 	"fmt"
-	"userservice/internal/storage"
+	"social/userservice/internal/storage"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

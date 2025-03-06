@@ -5,18 +5,15 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"social/userservice/internal/api"
-	"social/userservice/internal/server"
-	"social/userservice/internal/storage/psql"
+	"social/apiservice/internal/api"
+	"social/apiservice/internal/server"
 	"time"
 )
 
 func main() {
 
-	store, err := psql.NewPsqlStorage()
-	processError("Failed to create psql store", err)
 	slog.SetLogLoggerLevel(slog.LevelDebug)
-	a := api.NewApi(store)
+	a := api.NewApi()
 	router := server.GetRouter(a)
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("0.0.0.0:%d", 8080),
@@ -26,7 +23,7 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 	slog.Info("Started")
-	err = srv.ListenAndServe()
+	err := srv.ListenAndServe()
 	processError("Failed to start server", err)
 	slog.Info("Server stopped")
 }

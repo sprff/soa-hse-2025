@@ -27,8 +27,9 @@ type User struct {
 	UpdateDt    time.Time  `json:"updated_at" db:"updated_at"`
 }
 
-var ErrUserLoginAlreadyExists = errors.New("User with this login already exists")
-var ErrUserNotFound = errors.New("User not found")
+var ErrUserLoginAlreadyExists = errors.New("user with this login already exists")
+var ErrUserNotFound = errors.New("user not found")
+var ErrUserIncorrtectAuth = errors.New("inccorect login or password")
 
 type ErrUserInvalid struct{ reasons []string }
 

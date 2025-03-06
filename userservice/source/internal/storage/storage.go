@@ -2,7 +2,7 @@ package storage
 
 import (
 	"context"
-	"userservice/internal/models"
+	"social/shared/models"
 )
 
 type UserRepository interface {

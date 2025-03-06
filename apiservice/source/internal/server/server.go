@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"social/apiservice/internal/api"
 	"social/shared/models"
-	"social/userservice/internal/api"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -35,6 +35,5 @@ func prepareHandler(handler MyHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sd := models.NewStatusData(handler(ctx, w, r))
 		render.JSON(w, r, sd)
-		slog.DebugContext(ctx, "Responsed", "status", sd.Status)
 	}
 }

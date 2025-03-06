@@ -5,18 +5,20 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"userservice/internal/models"
+	"social/shared/models"
 )
 
-func (a *Api) CreateUser(ctx context.Context, user models.User) (models.UserID, error) {
+func (a *Api) CreateUser(ctx context.Context, login string, password string, email string) (models.UserID, error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	slog.Info("API CreateUser")
 
-	if err := user.Validate(); err != nil {
-		return models.UserID(""), fmt.Errorf("can't validate user: %w", err)
+	user := models.User{
+		Login:    login,
+		Password: password,
+		Email:    email,
 	}
-
+	user.HidePassword()
 	id, err := a.storage.CreateUser(ctx, user)
 	if err != nil {
 		return models.UserID(""), fmt.Errorf("can't write user to storage: %w", err)
@@ -38,13 +40,13 @@ func (a *Api) AuthUser(ctx context.Context, login string, password string) (id m
 	user, err := a.storage.GetUserByLogin(ctx, login)
 	switch {
 	case errors.Is(err, models.ErrUserNotFound):
-		return id, nil
+		return id, models.ErrUserIncorrtectAuth
 	case err != nil:
 		return id, err
 	}
 
 	if user.Password != expectedUser.Password {
-		return id, nil
+		return id, models.ErrUserIncorrtectAuth
 	}
 
 	id = user.ID

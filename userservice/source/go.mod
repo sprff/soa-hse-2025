@@ -1,4 +1,4 @@
-module userservice
+module social/userservice
 
 go 1.24.0
 
@@ -20,3 +20,9 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.10.0
 )
+
+require (
+	social/shared v0.0.0
+)
+
+replace social/shared => ../../shared/source

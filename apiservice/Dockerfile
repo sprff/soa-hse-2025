@@ -1,6 +1,6 @@
 FROM golang:1.24-alpine3.20 AS builder
 
-ENV SERVICE_NAME=userservice
+ENV SERVICE_NAME=apiservice
 ENV SHARED_NAME=shared
 
 # Prepare depencies
