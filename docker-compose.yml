@@ -1,0 +1,39 @@
+services:
+
+  #apiservice
+  apiservice-backend:
+    build:
+      context: .
+      dockerfile: apiservice/Dockerfile
+    ports:
+      - "7000:8080"
+      - "80:8080"
+
+  #userservice
+  userservice-backend:
+    hostname: userservice-backend
+    build:
+      context: .
+      dockerfile: userservice/Dockerfile
+
+    ports:
+      - "7001:8080"
+
+  userservice-database:
+    hostname: userservice-database
+    image: postgres:16
+    environment:
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: db
+    ports:
+      - "6001:5432"
+    volumes:
+      - ./userservice/db:/var/lib/postgresql/data
+
+
+  curl:
+    image: curlimages/curl
+    tty: true               # equivalent for -t
+    stdin_open: true        # equivalent for -i
+    entrypoint: sh
