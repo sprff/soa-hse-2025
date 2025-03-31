@@ -18,6 +18,8 @@ services:
 
     ports:
       - "7001:8080"
+    depends_on:
+      - userservice-database
 
   userservice-database:
     hostname: userservice-database
@@ -30,6 +32,31 @@ services:
       - "6001:5432"
     volumes:
       - ./userservice/db:/var/lib/postgresql/data
+
+  #postservice
+  postservice-backend:
+    hostname: postservice-backend
+    build:
+      context: .
+      dockerfile: postservice/Dockerfile
+
+    ports:
+      - "7002:8080"
+      - "5002:50051"
+    depends_on:
+      - postservice-database
+
+  postservice-database:
+    hostname: postservice-database
+    image: postgres:16
+    environment:
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: db
+    ports:
+      - "6002:5432"
+    volumes:
+      - ./postservice/db:/var/lib/postgresql/data
 
 
   curl:

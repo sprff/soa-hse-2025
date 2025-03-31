@@ -97,6 +97,7 @@ func GetUserByID(a *api.Api) MyHandlerFunc {
 			return nil, fmt.Errorf("can't get user by id: %w", err)
 		}
 
+		user.Password = "***"
 		return userservicerequests.ResponseGetUserByID{User: user}, nil
 	}
 }
@@ -111,6 +112,7 @@ func GetUserByLogin(a *api.Api) MyHandlerFunc {
 			return nil, fmt.Errorf("can't get user by login: %w", err)
 		}
 
+		user.Password = "***"
 		return userservicerequests.ResponseGetUserByLogin{User: user}, nil
 	}
 }

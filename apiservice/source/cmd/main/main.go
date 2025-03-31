@@ -2,18 +2,33 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
 	"social/apiservice/internal/api"
+	pb "social/apiservice/internal/proto"
 	"social/apiservice/internal/server"
 	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
 
 	slog.SetLogLoggerLevel(slog.LevelDebug)
-	a := api.NewApi()
+	conn, err := grpc.Dial("postservice-backend:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	client := pb.NewPostServiceClient(conn)
+	a := api.NewApi(
+		api.UserserviceClient{Url: "http://userservice-backend:8080"},
+		client,
+	)
 	router := server.GetRouter(a)
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("0.0.0.0:%d", 8080),
@@ -23,7 +38,7 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 	slog.Info("Started")
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	processError("Failed to start server", err)
 	slog.Info("Server stopped")
 }
