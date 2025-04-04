@@ -16,17 +16,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type post struct {
-	ID          string
-	Title       string
-	Description string
-	CreatorID   string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	IsPrivate   bool
-	Tags        []string
-}
-
 type PostServiceServer struct {
 	pb.UnimplementedPostServiceServer
 	mu    sync.RWMutex
