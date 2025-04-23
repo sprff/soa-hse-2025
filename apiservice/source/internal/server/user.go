@@ -7,10 +7,12 @@ import (
 	"net/http"
 	"social/apiservice/internal/api"
 	"social/shared/models"
+	kevents "social/shared/models/kafka_events"
 	apireqs "social/shared/models/requestmodels/apiservicerequests"
 	userreqs "social/shared/models/requestmodels/userservicerequests"
 	"social/shared/network"
 
+	"github.com/IBM/sarama"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -31,6 +33,12 @@ func RegisterUser(a *api.Api) MyHandlerFunc {
 		if err != nil {
 			return nil, fmt.Errorf("can't register user: %w", err)
 		}
+
+		a.Producer.SendMessage(&sarama.ProducerMessage{
+			Topic: "users",
+			Value: sarama.StringEncoder(kevents.Event{Event: "Registration", UserID: out.ID}.String()),
+		})
+
 		return apireqs.ResponseRegister{ID: out.ID}, nil
 	}
 }

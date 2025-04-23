@@ -51,3 +51,15 @@ type RequestGetUserByLogin struct{}
 type ResponseGetUserByLogin struct {
 	User models.User `json:"user"`
 }
+
+type RequestLikePost struct {
+	Login    string
+	Password string
+}
+type ResponseLikePost struct{}
+
+type RequestNewComment struct {
+	Login    string
+	Password string
+}
+type ResponseNewComment struct{}

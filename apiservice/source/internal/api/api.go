@@ -3,21 +3,39 @@ package api
 import (
 	"context"
 	"fmt"
+	"log"
 	post "social/apiservice/internal/proto"
 	"social/shared/models"
 	userreqs "social/shared/models/requestmodels/userservicerequests"
 	"social/shared/network"
+
+	"github.com/IBM/sarama"
 )
 
 type Api struct {
 	Usclient   UserserviceClient
 	PostClient post.PostServiceClient
+	Producer   sarama.SyncProducer
 }
 
 func NewApi(usClient UserserviceClient, postClient post.PostServiceClient) *Api {
+	config := sarama.NewConfig()
+	config.Producer.Return.Successes = true
+	config.Producer.Retry.Max = 5
+	config.Producer.RequiredAcks = sarama.WaitForAll
+
+
+	brokers := []string{"kafka:29092"}
+
+
+	producer, err := sarama.NewSyncProducer(brokers, config)
+	if err != nil {
+		log.Fatalf("Ошибка создания Producer: %v", err)
+	}
 	return &Api{
 		Usclient:   usClient,
 		PostClient: postClient,
+		Producer:   producer,
 	}
 }
 

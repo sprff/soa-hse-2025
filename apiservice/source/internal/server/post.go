@@ -8,11 +8,13 @@ import (
 	"social/apiservice/internal/api"
 	post "social/apiservice/internal/proto"
 	"social/shared/models"
+	kevents "social/shared/models/kafka_events"
 	apireqs "social/shared/models/requestmodels/apiservicerequests"
 	"social/shared/models/requestmodels/userservicerequests"
 	"social/shared/network"
 	"strconv"
 
+	"github.com/IBM/sarama"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -55,6 +57,7 @@ func GetPostByID(a *api.Api) MyHandlerFunc {
 		if err != nil {
 			return nil, fmt.Errorf("can't read body: %w", err)
 		}
+
 		slog.InfoContext(ctx, "Get Post", "id", id)
 
 		requster := ""
@@ -76,6 +79,15 @@ func GetPostByID(a *api.Api) MyHandlerFunc {
 		if err != nil {
 			return nil, fmt.Errorf("can't get post: %w", err)
 		}
+
+		_, _, err = a.Producer.SendMessage(&sarama.ProducerMessage{
+			Topic: "posts",
+			Value: sarama.StringEncoder(kevents.Event{Event: "View", UserID: requster, PostID: id}.String()),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("can't send message: %w", err)
+		}
+
 		return apireqs.ResponseGetPostByID{Post: convert(resp.Post)}, nil
 	}
 }
@@ -181,6 +193,65 @@ func DeletePost(a *api.Api) MyHandlerFunc {
 			return nil, fmt.Errorf("can't create post: %w", err)
 		}
 		return apireqs.ResponseDeletePost{Success: resp.Success}, nil
+	}
+}
+
+func LikePost(a *api.Api) MyHandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) (response any, err error) {
+		postId := chi.URLParam(r, "post_id")
+		input := apireqs.RequestLikePost{}
+		err = network.ReadBody(r, &input)
+		if err != nil {
+			return nil, fmt.Errorf("can't read body: %w", err)
+		}
+
+		userResp, err := a.Usclient.AuthUser(ctx, userservicerequests.RequestAuth{
+			Login:    input.Login,
+			Password: input.Password,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("can't auth user: %w", err)
+		}
+		requster := userResp.ID
+
+		_, _, err = a.Producer.SendMessage(&sarama.ProducerMessage{
+			Topic: "posts",
+			Value: sarama.StringEncoder(kevents.Event{Event: "Like", UserID: requster, PostID: postId}.String()),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("can't send message: %w", err)
+		}
+
+		return apireqs.ResponseLikePost{}, nil
+	}
+}
+
+func NewComment(a *api.Api) MyHandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) (response any, err error) {
+		postId := chi.URLParam(r, "post_id")
+		input := apireqs.RequestNewComment{}
+		err = network.ReadBody(r, &input)
+		if err != nil {
+			return nil, fmt.Errorf("can't read body: %w", err)
+		}
+
+		userResp, err := a.Usclient.AuthUser(ctx, userservicerequests.RequestAuth{
+			Login:    input.Login,
+			Password: input.Password,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("can't auth user: %w", err)
+		}
+		requster := userResp.ID
+		_, _, err = a.Producer.SendMessage(&sarama.ProducerMessage{
+			Topic: "posts",
+			Value: sarama.StringEncoder(kevents.Event{Event: "Like", UserID: requster, PostID: postId}.String()),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("can't send message: %w", err)
+		}
+
+		return apireqs.ResponseNewComment{}, nil
 	}
 }
 
