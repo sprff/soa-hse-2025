@@ -25,6 +25,15 @@ func GetRouter(a *api.Api) *chi.Mux {
 	router.Put("/users/{id}", prepareHandler(UpdateUser(a)))
 	router.Get("/users/bylogin/{login}", prepareHandler(GetUserByLogin(a)))
 
+	router.Post("/posts", prepareHandler(CreatePost(a)))
+	router.Get("/posts/{id}", prepareHandler(GetPostByID(a)))
+	router.Put("/posts/{id}", prepareHandler(UpdatePost(a)))
+	router.Delete("/posts/{id}", prepareHandler(DeletePost(a)))
+	router.Get("/posts/list/{page}", prepareHandler(GetPosts(a)))
+
+	router.Post("/posts/like/{post_id}", prepareHandler(LikePost(a)))
+	router.Post("/posts/comment/{post_id}", prepareHandler(NewComment(a)))
+
 	return router
 }
 
